@@ -25,6 +25,5 @@ jobs:
             {
               "Source": "dummy.pipeline",
               "DetailType": "BuildFailed",
-              "Detail": "{\"repository\": \"dummy-breakable-repo\", \"runId\": \"${{ github.run_id }}\"}"
-            }
+              "Detail": "{\"repository\": \"${{ github.repository }}\", \"runId\": \"${{ github.run_id }}\"}"
           ]'
