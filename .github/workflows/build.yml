@@ -1,0 +1,30 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Simulate a failing build
+        run: exit 1
+
+      - name: Notify Eventbridge on failure
+        if: failure()
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ap-south-1
+        run: |
+          aws events put-events --entries '[
+            {
+              "Source": "dummy.pipeline",
+              "DetailType": "BuildFailed",
+              "Detail": "{\"repository\": \"dummy-breakable-repo\", \"runId\": \"${{ github.run_id }}\"}"
+            }
+          ]'
